@@ -16,11 +16,11 @@
 
 package kotlinx.serialization.protobuf
 
-import kotlinx.serialization.KSerialClassDesc
+import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.SerialId
 import kotlinx.serialization.internal.onlySingleOrNull
 
-internal actual fun extractParameters(desc: KSerialClassDesc, index: Int): ProtoDesc {
+internal actual fun extractParameters(desc: SerialDescriptor, index: Int): ProtoDesc {
     val tag = desc.getAnnotationsForIndex(index).filterIsInstance<SerialId>().onlySingleOrNull()?.id ?: index
     val format = desc.getAnnotationsForIndex(index).filterIsInstance<ProtoType>().onlySingleOrNull()?.type
             ?: ProtoNumberType.DEFAULT

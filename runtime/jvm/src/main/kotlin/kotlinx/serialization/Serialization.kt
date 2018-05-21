@@ -58,9 +58,9 @@ internal fun <T> Class<T>.invokeSerializerGetter(vararg args: KSerializer<Any>):
     return serializer
 }
 
-actual fun getSerialId(desc: KSerialClassDesc, index: Int): Int? {
+actual fun getSerialId(desc: SerialDescriptor, index: Int): Int? {
     return (desc as? SerialClassDescImplTagged)?.getTagByIndex(index)
             ?: desc.getAnnotationsForIndex(index).filterIsInstance<SerialId>().singleOrNull()?.id
 }
 
-actual fun getSerialTag(desc: KSerialClassDesc, index: Int): String? = desc.getAnnotationsForIndex(index).filterIsInstance<SerialTag>().singleOrNull()?.tag
+actual fun getSerialTag(desc: SerialDescriptor, index: Int): String? = desc.getAnnotationsForIndex(index).filterIsInstance<SerialTag>().singleOrNull()?.tag
