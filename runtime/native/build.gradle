@@ -21,7 +21,6 @@ def deployMode = property('native.deploy') == 'true'
 
 sourceSets.main {
     kotlin.srcDir 'src/main/kotlin'
-//    kotlin.testDir ''
 
     component {
         outputKinds = [KLIBRARY]
