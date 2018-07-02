@@ -14,6 +14,22 @@
  * limitations under the License.
  */
 
+/*
+ * Copyright 2018 JetBrains s.r.o.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 // Auto-generated file, do not modify!
 import kotlin.Int
 import kotlin.String
@@ -41,8 +57,7 @@ data class MyData(
 ) {
     @Suppress("NAME_SHADOWING")
     object serializer : KSerializer<MyData> {
-        override val serialClassDesc: SerialDescriptor =
-                object : SerialClassDescImplTagged("MyData") {
+        override val descriptor: SerialDescriptor = object : SerialClassDescImplTagged("MyData") {
             init {
                 addElement("x")
                 addElement("y")
@@ -51,40 +66,40 @@ data class MyData(
         }
 
         override fun serialize(output: Encoder, obj: MyData) {
-            val output = output.beginStructure(serialClassDesc)
-            output.encodeNullableSerializableElement(serialClassDesc, 0, NullableSerializer(IntSerializer), obj.x)
-            output.encodeStringElement(serialClassDesc, 1, obj.y)
-            output.encodeSerializableElement(serialClassDesc, 2, ArrayListSerializer(IntSerializer), obj.intList)
-            output.endStructure(serialClassDesc)
+            val output = output.beginStructure(descriptor)
+            output.encodeNullableSerializableElement(descriptor, 0, NullableSerializer(IntSerializer), obj.x)
+            output.encodeStringElement(descriptor, 1, obj.y)
+            output.encodeSerializableElement(descriptor, 2, ArrayListSerializer(IntSerializer), obj.intList)
+            output.endStructure(descriptor)
         }
 
         override fun deserialize(input: Decoder): MyData {
-            val input = input.beginStructure(serialClassDesc)
+            val input = input.beginStructure(descriptor)
             var local0: Int? = null
             var local1: String? = null
             var local2: List<Int>? = null
             var bitMask: Int = 0
             mainLoop@while (true) {
-                val idx = input.decodeElementIndex(serialClassDesc)
+                val idx = input.decodeElementIndex(descriptor)
                 when (idx) {
                     -1 -> {
                         break@mainLoop
                     }
                     0 -> {
-                        local0 = input.decodeNullableSerializableElement(serialClassDesc, 0, NullableSerializer(IntSerializer))
+                        local0 = input.decodeNullableSerializableElement(descriptor, 0, NullableSerializer(IntSerializer))
                         bitMask = bitMask or 1
                     }
                     1 -> {
-                        local1 = input.decodeStringElement(serialClassDesc, 1)
+                        local1 = input.decodeStringElement(descriptor, 1)
                         bitMask = bitMask or 2
                     }
                     2 -> {
-                        local2 = input.decodeSerializableElement(serialClassDesc, 2, ArrayListSerializer(IntSerializer))
+                        local2 = input.decodeSerializableElement(descriptor, 2, ArrayListSerializer(IntSerializer))
                         bitMask = bitMask or 4
                     }
                 }
             }
-            input.endStructure(serialClassDesc)
+            input.endStructure(descriptor)
             if (bitMask and 1 == 0) {
                 throw MissingFieldException("x")
             }

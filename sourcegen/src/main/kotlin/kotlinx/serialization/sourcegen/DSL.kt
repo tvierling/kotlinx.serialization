@@ -85,7 +85,7 @@ class SClass(
         addModifiers(KModifier.OVERRIDE)
         addParameter("input", Decoder::class)
         returns(serializableClassName)
-        l("val input = input.beginStructure(serialClassDesc)")
+        l("val input = input.beginStructure(descriptor)")
         properties.forEachIndexed { index, prop ->
             l("var local$index: %T = null", prop.type.asNullable())
         }
@@ -93,7 +93,7 @@ class SClass(
 
 
         beginControlFlow("mainLoop@while (true)")
-        l("val idx = input.decodeElementIndex(serialClassDesc)")
+        l("val idx = input.decodeElementIndex(descriptor)")
         beginControlFlow("when (idx)")
         beginControlFlow("-1 ->")
         l("break@mainLoop")
@@ -102,10 +102,10 @@ class SClass(
         properties.forEachIndexed { index, it ->
             beginControlFlow("$index ->")
             val sti = it.getSerialTypeInfo()
-            if (sti.serializer == null) l("local$index = input.decode${sti.elementMethodPrefix}Element(serialClassDesc, $index)")
+            if (sti.serializer == null) l("local$index = input.decode${sti.elementMethodPrefix}Element(descriptor, $index)")
             else {
                 val invokeArgs = renderInvoke(sti.serializer, if (sti.needTypeParam) it.type else null)
-                l("local$index = input.decode${sti.elementMethodPrefix}Element(serialClassDesc, $index, %L)", invokeArgs)
+                l("local$index = input.decode${sti.elementMethodPrefix}Element(descriptor, $index, %L)", invokeArgs)
             }
             l("bitMask = bitMask or ${1 shl index}")
             endControlFlow()
@@ -114,7 +114,7 @@ class SClass(
         endControlFlow() // end when
         endControlFlow() // end while
 
-        l("input.endStructure(serialClassDesc)")
+        l("input.endStructure(descriptor)")
         properties.forEachIndexed { index, prop ->
             beginControlFlow("if (bitMask and ${1 shl index} == 0)")
             if (prop.optional) {
@@ -133,7 +133,7 @@ class SClass(
         addStatement("return %T($constructorArgs)", serializableClassName)
     }.build()
 
-    private fun renderDescriptor() = PropertySpec.builder("serialClassDesc", SerialDescriptor::class).apply {
+    private fun renderDescriptor() = PropertySpec.builder("descriptor", SerialDescriptor::class).apply {
         addModifiers(KModifier.OVERRIDE)
         val initCodeBlock = CodeBlock.builder().apply {
             if (properties.all { it.serialTag == null }) {
@@ -161,22 +161,22 @@ class SClass(
         addModifiers(KModifier.OVERRIDE)
         addParameter("output", Encoder::class)
         addParameter("obj", serializableClassName)
-        l("val output = output.beginStructure(serialClassDesc)")
+        l("val output = output.beginStructure(descriptor)")
 
         properties.forEachIndexed { index, it ->
             val sti = it.getSerialTypeInfo()
             if (sti.serializer == null) {
                 if (it.type == Unit::class.asTypeName())
-                    l("output.encode${sti.elementMethodPrefix}Element(serialClassDesc, $index)")
+                    l("output.encode${sti.elementMethodPrefix}Element(descriptor, $index)")
                 else
-                    l("output.encode${sti.elementMethodPrefix}Element(serialClassDesc, $index, obj.${it.name})")
+                    l("output.encode${sti.elementMethodPrefix}Element(descriptor, $index, obj.${it.name})")
             }
             else {
                 val invokeArgs = renderInvoke(sti.serializer, if (sti.needTypeParam) it.type else null)
-                l("output.encode${sti.elementMethodPrefix}Element(serialClassDesc, $index, %L, obj.${it.name})", invokeArgs)
+                l("output.encode${sti.elementMethodPrefix}Element(descriptor, $index, %L, obj.${it.name})", invokeArgs)
             }
         }
-        l("output.endStructure(serialClassDesc)")
+        l("output.endStructure(descriptor)")
     }.build()
 
     class SProperty(
