@@ -19,7 +19,7 @@ package kotlinx.serialization.internal
 import kotlinx.serialization.*
 import kotlinx.serialization.CompositeDecoder.Companion.UNKNOWN_NAME
 
-open class SerialClassDescImpl(override val name: String) : SerialDescriptor {
+open class SerialClassDescImpl @JvmOverloads constructor(override val name: String, private val provider: DescriptorProvider? = null) : SerialDescriptor {
     override val kind: SerialKind get() = StructureKind.CLASS
 
     private val names: MutableList<String> = ArrayList()
@@ -50,8 +50,10 @@ open class SerialClassDescImpl(override val name: String) : SerialDescriptor {
         descriptors.add(desc)
     }
 
-    override fun getElementDescriptor(index: Int): SerialDescriptor {
-        return descriptors[index]
+    override fun getElementDescriptor(index: Int): SerialDescriptor = when {
+        provider != null -> provider.getElementDescriptor(index)
+        descriptors.size > index -> descriptors[index]
+        else -> throw AssertionError("$this does not have descriptor for index $index")
     }
 
     override fun isElementOptional(index: Int): Boolean {

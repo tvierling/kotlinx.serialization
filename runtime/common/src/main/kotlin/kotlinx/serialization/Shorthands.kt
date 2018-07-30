@@ -33,3 +33,7 @@ fun Short.Companion.serializer(): KSerializer<Short> = ShortSerializer
 fun Int.Companion.serializer(): KSerializer<Int> = IntSerializer
 fun Long.Companion.serializer(): KSerializer<Long> = LongSerializer
 fun Double.Companion.serializer(): KSerializer<Double> = DoubleSerializer
+
+fun SerialDescriptor.elementDescriptors(): List<SerialDescriptor> {
+    return (0 until elementsCount).map { getElementDescriptor(it) }
+}
