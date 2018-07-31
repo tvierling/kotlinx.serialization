@@ -48,6 +48,16 @@ data class DataZoo(
     val m: Map<String, Data2>?
 )
 
+@Serializable
+data class DataZooIsomorphic(
+    @Transient val invisible: String = "",
+    val b: Int,
+    val a: String,
+    val cc: List<Data1>,
+    val lll: List<List<Boolean>>,
+    @Optional val mm: Map<String, Data2>? = null
+)
+
 class SchemaTest {
 
     private fun checkDescriptor(serialDescriptor: SerialDescriptor) {
@@ -86,5 +96,13 @@ class SchemaTest {
         assertFalse(d.isElementOptional(4))
         assertEquals(2, mapDesc.elementsCount)
         assertEquals(listOf(StringDescriptor, Data2.serializer().descriptor), mapDesc.elementDescriptors())
+    }
+
+    @Test
+    fun `equals on descriptors`() {
+        val desc1: SerialDescriptor = DataZoo.serializer().descriptor
+        val desc2: SerialDescriptor = DataZooIsomorphic.serializer().descriptor
+
+        assertEquals(desc1.elementDescriptors(), desc2.elementDescriptors())
     }
 }

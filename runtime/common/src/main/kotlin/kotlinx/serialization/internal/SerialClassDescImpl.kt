@@ -86,6 +86,24 @@ open class SerialClassDescImpl @JvmOverloads constructor(override val name: Stri
     }
 
     override fun toString() = "$name$names"
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is SerialClassDescImpl) return false
+
+        if (name != other.name) return false
+        if (descriptors != other.descriptors) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + descriptors.hashCode()
+        return result
+    }
+
+
 }
 
 open class SerialClassDescImplTagged(name: String) : SerialClassDescImpl(name) {

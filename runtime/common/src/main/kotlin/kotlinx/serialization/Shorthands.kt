@@ -37,3 +37,13 @@ fun Double.Companion.serializer(): KSerializer<Double> = DoubleSerializer
 fun SerialDescriptor.elementDescriptors(): List<SerialDescriptor> {
     return (0 until elementsCount).map { getElementDescriptor(it) }
 }
+
+fun SerialDescriptor.getElementIndexOrThrow(name: String): Int {
+    val i = getElementIndex(name)
+    if (i == CompositeDecoder.UNKNOWN_NAME) throw SerializationException("Unknown name '$name'")
+    return i
+}
+
+@Deprecated("Obsolete name from preview version of library.", ReplaceWith("elementsCount"))
+val SerialDescriptor.associatedFieldsCount: Int
+    get() = elementsCount
