@@ -18,6 +18,8 @@ package kotlinx.serialization.features
 
 import kotlinx.serialization.*
 import kotlinx.serialization.internal.*
+import kotlinx.serialization.json.*
+import kotlinx.serialization.schema.JsonSchemaCreator
 import kotlin.test.*
 
 @Serializable
@@ -119,5 +121,31 @@ class SchemaTest {
         assertNotEquals(boxes[0], boxes[1])
         val intBox = Box.serializer(IntSerializer).descriptor
         assertEquals(intBox, boxes[1])
+    }
+
+    @Test
+    fun jsonSchema() {
+        val desc: SerialDescriptor = Data2.serializer().descriptor
+        val schema = JsonSchemaCreator.createSchema(desc)
+        println(schema)
+
+        val correctSchema = json {
+            "description" to desc.name
+            "type" to "object"
+            "required" to jsonArray { +"s" }
+            "properties" to json {
+                "l" to json {
+                    "description" to ARRAY_LIST_NAME
+                    "type" to "array"
+                    "items" to json { "type" to "number"; "description" to IntDescriptor.name }
+                }
+                "s" to json {
+                    "description" to StringDescriptor.name
+                    "type" to "string"
+                }
+            }
+        }
+
+        assertEquals(correctSchema, schema)
     }
 }
