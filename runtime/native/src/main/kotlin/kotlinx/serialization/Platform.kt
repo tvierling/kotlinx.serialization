@@ -32,13 +32,14 @@ actual fun stringFromUtf8Bytes(bytes: ByteArray): String {
 
 
 @Suppress("UNCHECKED_CAST")
-actual fun <T : Any> KClass<T>.serializer(): KSerializer<T> = TODO("Not supported in native")
+actual fun <T : Any> KClass<T>.serializer(): KSerializer<T> = TODO("Obtaining serializer via KClass is not supported on Native. Specify serializer explicitly.")
 
 
 actual fun <E : Enum<E>> enumFromName(enumClass: KClass<E>, value: String): E = TODO("Not supported in native")
 actual fun <E : Enum<E>> enumFromOrdinal(enumClass: KClass<E>, ordinal: Int): E = TODO("Not supported in native")
 
 actual fun <E : Enum<E>> KClass<E>.enumClassName(): String = this.simpleName ?: ""
+actual fun <E : Enum<E>> KClass<E>.enumMembers(): Array<E> = TODO("Not supported in native")
 
 actual fun <T : Any, E : T?> ArrayList<E>.toNativeArray(eClass: KClass<T>): Array<E> = TODO("Not supported in native")
 
@@ -47,3 +48,5 @@ actual fun getSerialId(desc: KSerialClassDesc, index: Int): Int? {
 }
 
 actual fun getSerialTag(desc: KSerialClassDesc, index: Int): String? = index.toString()
+
+actual annotation class JvmOverloads()

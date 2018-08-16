@@ -16,6 +16,7 @@
 
 apply plugin: 'java'
 apply plugin: 'kotlin-platform-jvm'
+apply plugin: 'kotlinx-serialization'
 
 sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
@@ -78,3 +79,7 @@ compileJava {
 compileKotlin {
     kotlinOptions.jvmTarget = "1.6"
 }
+
+apply plugin: 'com.jfrog.bintray'
+
+apply from: "${rootProject.rootDir}/gradle/bintray.gradle"

@@ -15,6 +15,7 @@
  */
 
 apply plugin: 'kotlin-platform-common'
+apply plugin: 'kotlinx-serialization'
 
 dependencies {
     compile libraries.kotlin_stdlib_common
@@ -23,3 +24,7 @@ dependencies {
     testCompile libraries.kotlin_test_annotations_common
     testCompile libraries.kotlin_test_common
 }
+
+apply plugin: 'com.jfrog.bintray'
+
+apply from: "${rootProject.rootDir}/gradle/bintray.gradle"

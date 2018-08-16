@@ -19,9 +19,11 @@ bintray {
     key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
     publications = ['mavenProject']
     pkg {
-        repo = 'kotlinx'
+//        repo = 'kotlinx'
+        repo = 'libs-preview'
         name = 'kotlinx.serialization.runtime'
-        userOrg = 'kotlin'
+//        userOrg = 'kotlin'
+        userOrg = 'sandwwraith'
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/Kotlin/kotlinx.serialization'
         websiteUrl = 'https://github.com/Kotlin/kotlinx.serialization'

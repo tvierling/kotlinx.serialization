@@ -31,7 +31,7 @@ open class SerialClassDescImpl @JvmOverloads constructor(override val name: Stri
     private val descriptors: MutableList<SerialDescriptor> = mutableListOf()
 
     private var _indices: Map<String, Int>? = null
-    private val indices: Map<String, Int> get() = _indices ?: buildIndices()
+    private val indices: Map<String, Int> by lazy { buildIndices() }
 
     @JvmOverloads
     fun addElement(name: String, isOptional: Boolean = false) {
@@ -48,6 +48,16 @@ open class SerialClassDescImpl @JvmOverloads constructor(override val name: Stri
 
     fun pushDescriptor(desc: SerialDescriptor) {
         descriptors.add(desc)
+    }
+
+    /**
+     * Forces computation of all lazy structures.
+     *
+     * Might be helpful in Native to avoid problems with objects freezing.
+     */
+    fun init() {
+        // built by freeze-aware lazy
+//        buildIndices()
     }
 
     override fun getElementDescriptor(index: Int): SerialDescriptor = when {
@@ -80,7 +90,7 @@ open class SerialClassDescImpl @JvmOverloads constructor(override val name: Stri
         val indices = HashMap<String, Int>()
         for (i in 0..names.size - 1)
             indices.put(names[i], i)
-        _indices = indices
+//        _indices = indices
         return indices
     }
 

@@ -14,29 +14,47 @@
  * limitations under the License.
  */
 
+buildscript {
+    repositories {
+        jcenter()
+        mavenLocal()
+        maven { url serializationRepo }
+        maven { url "https://dl.bintray.com/jetbrains/kotlin-native-dependencies" }
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-native-gradle-plugin:0.9-dev-3210"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.2-SNAPSHOT'
+    }
+}
+
+evaluationDependsOn(":common")
 
 apply plugin: 'kotlin-platform-native'
 
 def deployMode = property('native.deploy') == 'true'
 
 sourceSets.main {
-    kotlin.srcDir 'src/main/kotlin'
+    kotlin.srcDirs = ['src/main/kotlin', '../common/src/main/kotlin', '../../json/common/src']
 
     component {
+        baseName = "kotlinx-serialization-runtime-native"
         outputKinds = [KLIBRARY]
         if (!deployMode)
             target 'host'
         else
             target "macos_x64", "ios_arm64", "ios_x64"
     }
+
 }
 
 dependencies {
-    expectedBy project(':common')
-    expectedBy project(':jsonparser')
+//    expectedBy project(':common')
+//    expectedBy project(':jsonparser')
 }
 
 apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
 def localMavenRepo = "file://${new File(System.properties['user.home'] as String)}/.m2-kotlin-native"
 publishing {
@@ -47,3 +65,8 @@ publishing {
     }
 }
 
+apply from: "${rootProject.rootDir}/gradle/bintray.gradle"
+
+bintrayUpload.doFirst {
+    publications = project.publishing.publications
+}
