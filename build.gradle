@@ -49,13 +49,13 @@ allprojects {
     version property('library.version')
 
     if (project.hasProperty("bootstrap")) {
-        version = version + '-PREVIEW'
+        version = version + '-eap-1'
     }
 
     repositories {
-        jcenter()
         maven { url eapChannel }
         maven { url 'https://dl.bintray.com/kotlin/kotlin-dev' }
+        jcenter()
         mavenLocal()
     }
 }
@@ -65,13 +65,13 @@ subprojects {
 
     buildscript {
         repositories {
-            jcenter()
             mavenLocal()
             maven { url "https://plugins.gradle.org/m2/" }
             maven { url eapChannel }
             maven { url 'https://dl.bintray.com/kotlin/kotlin-dev' }
             maven { url serializationRepo }
             maven { url "https://dl.bintray.com/jetbrains/kotlin-native-dependencies" }
+            jcenter()
         }
         dependencies {
             classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$compilerVersion"

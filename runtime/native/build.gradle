@@ -16,14 +16,15 @@
 
 buildscript {
     repositories {
-        jcenter()
         mavenLocal()
         maven { url serializationRepo }
+        maven { url 'http://dl.bintray.com/kotlin/kotlin-dev' }
         maven { url "https://dl.bintray.com/jetbrains/kotlin-native-dependencies" }
+        jcenter()
     }
 
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-native-gradle-plugin:0.9-dev-3210"
+        classpath "org.jetbrains.kotlin:kotlin-native-gradle-plugin:${property('konan.version')}"
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.2-SNAPSHOT'
     }
 }
@@ -39,6 +40,11 @@ sourceSets.main {
 
     component {
         baseName = "kotlinx-serialization-runtime-native"
+
+        // todo: fixme, k/n!
+        publishJavadoc = false
+        publishSources = false
+
         outputKinds = [KLIBRARY]
         if (!deployMode)
             target 'host'
