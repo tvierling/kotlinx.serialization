@@ -49,7 +49,7 @@ allprojects {
     version property('library.version')
 
     if (project.hasProperty("bootstrap")) {
-        version = version + '-eap-1'
+        version = version + '-eap-4'
     }
 
     repositories {

@@ -60,6 +60,7 @@ data class DataZooIsomorphic(
     @Optional val mm: Map<String, Data2>? = null
 )
 
+@Ignore
 class SchemaTest {
 
     private fun checkDescriptor(serialDescriptor: SerialDescriptor) {
