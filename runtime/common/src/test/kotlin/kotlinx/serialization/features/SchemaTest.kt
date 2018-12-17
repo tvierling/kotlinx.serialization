@@ -18,8 +18,9 @@ package kotlinx.serialization.features
 
 import kotlinx.serialization.*
 import kotlinx.serialization.internal.*
-import kotlinx.serialization.json.*
-import kotlinx.serialization.schema.JsonSchemaCreator
+import kotlinx.serialization.json.json
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.schema.JsonSchema
 import kotlin.test.*
 
 @Serializable
@@ -90,7 +91,7 @@ class SchemaTest {
     @Test
     fun richSchema() {
         val d: SerialDescriptor = DataZoo.serializer().descriptor
-        val descs = d.elementDescriptors()
+        val descs = d.elementDescriptors().toList()
         assertEquals(5, descs.size)
         assertEquals(listOf(IntDescriptor, StringDescriptor, ArrayListClassDesc(Data1.serializer().descriptor)), descs.take(3))
         val listListDesc = descs[3]
@@ -102,7 +103,7 @@ class SchemaTest {
         assertTrue(mapDesc.isNullable)
         assertFalse(d.isElementOptional(4))
         assertEquals(2, mapDesc.elementsCount)
-        assertEquals(listOf(StringDescriptor, Data2.serializer().descriptor), mapDesc.elementDescriptors())
+        assertEquals(listOf(StringDescriptor, Data2.serializer().descriptor), mapDesc.elementDescriptors().toList())
     }
 
     @Test
@@ -110,12 +111,12 @@ class SchemaTest {
         val desc1: SerialDescriptor = DataZoo.serializer().descriptor
         val desc2: SerialDescriptor = DataZooIsomorphic.serializer().descriptor
 
-        assertEquals(desc1.elementDescriptors(), desc2.elementDescriptors())
+        assertEquals(desc1.elementDescriptors().toList(), desc2.elementDescriptors().toList())
     }
 
     @Test
     fun genericDescriptors() {
-        val boxes = BoxHolder.serializer().descriptor.elementDescriptors()
+        val boxes = BoxHolder.serializer().descriptor.elementDescriptors().toList()
         assertTrue(boxes[0].getElementDescriptor(0) is StringDescriptor)
         assertTrue(boxes[1].getElementDescriptor(0) is IntDescriptor)
         assertNotEquals(boxes[0], boxes[1])
@@ -126,7 +127,7 @@ class SchemaTest {
     @Test
     fun jsonSchema() {
         val desc: SerialDescriptor = Data2.serializer().descriptor
-        val schema = JsonSchemaCreator.createSchema(desc)
+        val schema = JsonSchema(desc)
         println(schema)
 
         val correctSchema = json {

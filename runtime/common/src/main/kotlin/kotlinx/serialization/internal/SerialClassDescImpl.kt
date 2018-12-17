@@ -97,14 +97,14 @@ open class SerialClassDescImpl @JvmOverloads constructor(
         if (other !is SerialClassDescImpl) return false
 
         if (name != other.name) return false
-        if (elementDescriptors() != other.elementDescriptors()) return false
+        if (elementDescriptors().toList() != other.elementDescriptors().toList()) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = name.hashCode()
-        result = 31 * result + elementDescriptors().hashCode()
+        result = 31 * result + elementDescriptors().toList().hashCode()
         return result
     }
 

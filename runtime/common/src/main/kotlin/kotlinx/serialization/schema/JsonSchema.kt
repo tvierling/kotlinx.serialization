@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("FunctionName")
+
 package kotlinx.serialization.schema
 
 import kotlinx.serialization.*
@@ -29,39 +31,41 @@ internal val SerialDescriptor.jsonType
         else -> "object"
     }
 
-class JsonSchemaCreator : DescriptorTraverser<JsonObject> {
-    private val properties: MutableMap<String, JsonObject> = mutableMapOf()
-    private val requiredProperties: MutableSet<String> = mutableSetOf()
 
-    override fun visitChild(descriptor: SerialDescriptor, child: SerialDescriptor, index: Int): Boolean {
+/**
+ * Creates an [JsonObject] which contains Json Schema of given [descriptor].
+ *
+ * Schema can contain following fields:
+ * `description`, `type` for all descriptors;
+ * `properties` and `required` for objects;
+ * `items` for arrays.
+ *
+ * User can modify this schema to add additional validation keywords
+ * (as per [https://json-schema.org/latest/json-schema-validation.html])
+ * if they want.
+ */
+fun JsonSchema(descriptor: SerialDescriptor): JsonObject {
+    val properties: MutableMap<String, JsonObject> = mutableMapOf()
+    val requiredProperties: MutableSet<String> = mutableSetOf()
+
+    descriptor.elementDescriptors().forEachIndexed { index, child ->
         val elementName = descriptor.getElementName(index)
-        properties[elementName] = child.traverse(JsonSchemaCreator())
+        properties[elementName] = child.accept(::JsonSchema)
         if (!descriptor.isElementOptional(index)) requiredProperties.add(elementName)
-        return false // don't traverse automatically
     }
 
-    override fun exitDescriptor(desc: SerialDescriptor): JsonObject {
-        val jsonType = desc.jsonType
-        val objectData: MutableMap<String, JsonElement> = mutableMapOf(
-            "description" to JsonLiteral(desc.name),
-            "type" to JsonLiteral(jsonType)
-        )
-        when (jsonType) {
-            "object" -> {
-                objectData["properties"] = JsonObject(properties)
-                objectData["required"] = JsonArray(requiredProperties.map { JsonLiteral(it) })
-            }
-            "array" -> objectData["items"] = properties.values.let { check(it.size == 1); it.first() }
-            else -> { /* no-op */ }
+    val jsonType = descriptor.jsonType
+    val objectData: MutableMap<String, JsonElement> = mutableMapOf(
+        "description" to JsonLiteral(descriptor.name),
+        "type" to JsonLiteral(jsonType)
+    )
+    when (jsonType) {
+        "object" -> {
+            objectData["properties"] = JsonObject(properties)
+            objectData["required"] = JsonArray(requiredProperties.map { JsonLiteral(it) })
         }
-        return JsonObject(objectData)
+        "array" -> objectData["items"] = properties.values.let { check(it.size == 1); it.first() }
+        else -> { /* no-op */ }
     }
-
-    companion object {
-        fun createSchema(descriptor: SerialDescriptor) = descriptor.traverse(JsonSchemaCreator())
-        fun <T> createSchema(serializer: KSerializer<T>) = serializer.descriptor.traverse(JsonSchemaCreator())
-
-        @ImplicitReflectionSerializer
-        inline fun <reified T: Any> createSchema() = T::class.serializer().descriptor.traverse(JsonSchemaCreator())
-    }
+    return JsonObject(objectData)
 }
