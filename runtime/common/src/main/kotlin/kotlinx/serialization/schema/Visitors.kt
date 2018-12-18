@@ -28,6 +28,24 @@ interface DescriptorVisitor<R> {
     fun visitDescriptor(descriptor: SerialDescriptor): R
 }
 
+abstract class BaseDescriptorVisitor<R>: DescriptorVisitor<R> {
+    final override fun visitDescriptor(descriptor: SerialDescriptor): R = when(descriptor.kind) {
+        is PrimitiveKind.STRING -> visitString(descriptor)
+        is PrimitiveKind -> visitPrimitive(descriptor)
+        is StructureKind.CLASS -> visitClass(descriptor)
+        is StructureKind -> visitCollection(descriptor)
+        is UnionKind.ENUM_KIND -> visitEnum(descriptor)
+        is UnionKind -> visitUnion(descriptor)
+    }
+
+    abstract fun visitString(descriptor: SerialDescriptor): R
+    abstract fun visitPrimitive(descriptor: SerialDescriptor): R
+    abstract fun visitClass(descriptor: SerialDescriptor): R
+    abstract fun visitCollection(descriptor: SerialDescriptor): R
+    abstract fun visitEnum(descriptor: SerialDescriptor): R
+    abstract fun visitUnion(descriptor: SerialDescriptor): R
+}
+
 /**
  * Visits [this] with a given [visitor].
  *
